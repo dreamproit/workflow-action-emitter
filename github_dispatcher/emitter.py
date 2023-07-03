@@ -1,6 +1,6 @@
 import requests
 import json
-import sys
+import argparse
 
 def send_github_dispatch(repo, pat, event_type, emitter_image):
     url = f"https://api.github.com/repos/{repo}/dispatches"
@@ -23,15 +23,16 @@ def send_github_dispatch(repo, pat, event_type, emitter_image):
         return False
     
 if __name__ == "__main__":
-    if len(sys.argv) != 5:
-        print("Usage: python github_dispatcher.py <repo> <pat> <event_type> <emitter_image>")
+    parser = argparse.ArgumentParser(description="Send GitHub dispatch event")
+    parser.add_argument("repo", help="Repository name")
+    parser.add_argument("pat", help="Personal access token (PAT)")
+    parser.add_argument("event_type", help="Event type")
+    parser.add_argument("emitter_image", help="Emitter image")
+
+    args = parser.parse_args()
+
+    success = send_github_dispatch(args.repo, args.pat, args.event_type, args.emitter_image)
+    if success:
+        print("GitHub dispatch event sent successfully.")
     else:
-        repo = sys.argv[1]
-        pat = sys.argv[2]
-        event_type = sys.argv[3]
-        emitter_image = sys.argv[4]
-        success = send_github_dispatch(repo, pat, event_type, emitter_image)
-        if success:
-            print("GitHub dispatch event sent successfully.")
-        else:
-            print("Failed to send GitHub dispatch event.")
+        print("Failed to send GitHub dispatch event.")
